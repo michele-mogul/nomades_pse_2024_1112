@@ -1,0 +1,102 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# macOS specific files
+.DS_Store
+
+# Distribution / packaging
+.Python
+env/
+venv/
+env.bak/
+venv.bak/
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+__pypackages__/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.coverage.*
+.cache/
+
+# Jupyter/IPython
+.ipynb_checkpoints/
+.colab/
+*.local/share/jupyter/
+*.ipynb
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# mypy
+.mypy_cache/
+
+# pytype
+.pytype/
+
+# C extensions
+*.so
+
+# Pycharm
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Anaconda
+.env/
+logs/
+conda-meta/
+bin/
+lib/
+include/
+share/
+*.bak
+*.bkp
+*.backup
+*.swp
+*.ps1
+*.yml
+*.yaml
+
+# Editor backup files
+*~
