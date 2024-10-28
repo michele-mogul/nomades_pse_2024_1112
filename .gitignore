@@ -1,102 +1,35 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# macOS specific files
+.idea
 .DS_Store
+.ipynb_checkpoints
 
-# Distribution / packaging
-.Python
-env/
-venv/
-env.bak/
-venv.bak/
-*.egg
-*.egg-info/
-dist/
-build/
-eggs/
-parts/
-var/
-sdist/
-develop-eggs/
-.installed.cfg
-lib/
-lib64/
-__pypackages__/
+exercises/
+__pycache__/
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+Flask_old/
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.cache/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-.coverage.*
-.cache/
+# firestore credential
+*cred.json
 
-# Jupyter/IPython
-.ipynb_checkpoints/
-.colab/
-*.local/share/jupyter/
-*.ipynb
+# To Be deleted
+python/exemples/
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+python/student_exercises/implementations/basic_input_output/
+python/student_exercises/implementations/bruteforce/
+python/student_exercises/implementations/guess_number/
+python/student_exercises/implementations/input_io/
+python/student_exercises/implementations/pygame/
+python/student_exercises/implementations/random_password_generator/
+python/student_exercises/implementations/some_small_exercises/
 
-# Spyder project settings
-.spyderproject
-.spyproject
+python/student_exercises/corrections/
+python/student_exercises/corrections/basic_input_output/
+python/student_exercises/corrections/basics/
+python/student_exercises/corrections/bruteforce/
+python/student_exercises/corrections/guess_number/
+python/student_exercises/corrections/input_io/
+python/student_exercises/corrections/pygame/
+python/student_exercises/corrections/random_password_generator/
+python/student_exercises/corrections/some_small_exercises/
 
-# mypy
-.mypy_cache/
-
-# pytype
-.pytype/
-
-# C extensions
-*.so
-
-# Pycharm
-.idea/
-*.iml
-
-# VS Code
-.vscode/
-
-# Anaconda
-.env/
-logs/
-conda-meta/
-bin/
-lib/
-include/
-share/
-*.bak
-*.bkp
-*.backup
-*.swp
-*.ps1
-*.yml
-*.yaml
-
-# Editor backup files
-*~
+numpy_pandas/
+flask/
