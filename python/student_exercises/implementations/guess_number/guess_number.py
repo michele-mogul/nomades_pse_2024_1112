@@ -4,7 +4,7 @@ import math
 
 # Question: The definition position of the function determines the visibility in the global namespace? This also applies
 # for classes or not?
-def get_non_negative_int(prompt):
+def get_non_negative_int_input(prompt):
     input_value_casted = -1
     while True:
         try:
@@ -36,20 +36,20 @@ def guess_number():
     print("Enter a number and see if you guessed right!")
     print("If you want to exit, enter the word 'exit'")
 
-    secret_number: int  = random.randint(1, 100)
-    optimal_tries: int  = int(math.log(100, 2))
-    print(secret_number)
-    trys: int  = 1
-    while (input_data := get_non_negative_int("Try you luck! Enter a number\n")) != secret_number and input_data != -1:
-        trys += 1
-        print(f"Try again!, your secret number is {'higher' if secret_number > input_data else 'lower'}")
+    MAX_NUMBER = 100
+    tries_count, secret_number, optimal_tries_count  = 1, random.randint(1, MAX_NUMBER), int(math.log(MAX_NUMBER, 2))
 
-    if input_data == -1:
-        print("Okey Dokey! See you next time!")
-        return
-    # to ask user to enter the number use the function input
-    print(f"bravo, you did it in {trys} {('try', 'tries')[trys > 1]}!")
-    print(f"the optimal ties are {optimal_tries} for this range, you did {('great!','good.')[trys > optimal_tries]}")
+    print(secret_number)
+    while (input_data := get_non_negative_int_input("Try you luck! Enter a number\n")) != secret_number and input_data != -1:
+        print(f"Try again!, your secret number is {'higher' if secret_number > input_data else 'lower'}")
+        tries_count += 1
+    else:
+        if input_data == -1:
+            print("Okey Dokey! See you next time!")
+            return
+        # to ask user to enter the number use the function input
+        print(f"bravo, you did it in {tries_count} {('try', 'tries')[tries_count > 1]}!")
+        print(f"the optimal ties are {optimal_tries_count} for this range, you did {('great!','good.')[tries_count > optimal_tries_count]}")
 
 if __name__ == '__main__':
     # Run the game
