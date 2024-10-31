@@ -65,10 +65,15 @@ def find_minimum(lst):
 
 def combine_lists(lst1, lst2):
     if isinstance(lst1, list) and isinstance(lst2, list) :
-        result = [None] * (len(lst1) + len(lst1))
-        result[::2] = lst1
-        result[1::2] = lst2
-        return result
+        if len(lst1) == 0:
+            return lst2[:]
+        elif len(lst2) == 0:
+            return lst1[:]
+        else:
+            result = [None] * (len(lst1) + len(lst2))
+            result[::2] = lst1
+            result[1::2] = lst2
+            return result
     return None
 
 def is_palindrome(lst):
