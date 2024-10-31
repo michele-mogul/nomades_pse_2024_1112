@@ -121,6 +121,8 @@ class TestListFunctions(unittest.TestCase):
         self.assertEqual(combine_lists(lst1, lst2), [1, 4, 2, 5, 3, 6])
         self.assertEqual(combine_lists([], []), [])
         self.assertEqual(combine_lists([1], [2]), [1, 2])
+        self.assertEqual(combine_lists([1], []), [1])
+        self.assertEqual(combine_lists([], [2]), [2])
 
     def test_is_palindrome(self):
         lst1 = [1, 2, 3, 2, 1]
