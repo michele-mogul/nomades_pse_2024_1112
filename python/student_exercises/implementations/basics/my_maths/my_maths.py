@@ -8,7 +8,7 @@ def is_even(number: int) -> str:
     Returns:
       A string that says if the number is even or odd
     """
-    return None
+    return ('The number is odd', 'The number is even')[number % 2 == 0]
 
         
 
@@ -19,7 +19,10 @@ def factorial(n: int) -> int:
     :param n: The number to compute the factorial of
     :return: The factorial of n
     """
-    return None
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n - 1)
 
 def fibonacci(n: int) -> int:
     """
@@ -27,8 +30,12 @@ def fibonacci(n: int) -> int:
     :param n: The index of the Fibonacci number to compute
     :return: The nth Fibonacci number
     """
-    return None
-
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n - 2) + fibonacci(n - 1)
 
 def sum(n: int) -> int: # O(1); O(n); O(n^2); O(log n)
     """
@@ -36,7 +43,16 @@ def sum(n: int) -> int: # O(1); O(n); O(n^2); O(log n)
     :param n: The number to compute the sum up to
     :return: The sum of all integers from 0 to n
     """
-    return None
+    if n == 0:
+        return 0
+    if n == 1:
+        return 1
+
+    sum = 0
+    for i in range(0, n+1):
+        sum += i
+
+    return sum
 
 def square(n: int) -> int:
     """
@@ -44,7 +60,7 @@ def square(n: int) -> int:
     :param n: The number to compute the square of
     :return: The square of n
     """
-    return None
+    return n**2
 
 
 
@@ -55,4 +71,10 @@ def is_prime(n: int) -> bool:
     :param n: The number to check
     :return: True if the number is prime, False otherwise
     """
-    return None
+    if n == 0 or n == 1:
+        return False
+
+    for i in range(2, n):  # for every value between 1 and n
+        if n % i == 0:  # check if i divides n
+            return False  # if this is true, n is not prime
+    return True
