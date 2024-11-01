@@ -5,7 +5,7 @@ def generate_numbers():
     Returns:
         list: List of numbers from 1 to 10.
     """
-    return [*range(1, 11)]
+    return [x for x in range(1, 11)]
 
 # Example: generate_numbers() -> [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -105,7 +105,7 @@ def capitalize_words(sentence):
         list: List of words with the first letter capitalized.
     """
 
-    return [*map(lambda word: word.capitalize(), sentence.split())]
+    return [word.capitalize() for word in sentence.split()]
 
 # Example: capitalize_words("hello world, how are you?") -> ['Hello', 'World,', 'How', 'Are', 'You?']
 
@@ -124,8 +124,7 @@ def generate_prime_numbers():
                 return False  # if this is true, n is not prime
         return True
 
-
-    return [*filter(lambda x: prime(x), range(2, 51))]
+    return [x for x in range(1, 51) if prime(x)]
 
 # Example: generate_prime_numbers() -> [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
 
@@ -137,7 +136,7 @@ def generate_divisible_by_3_or_5():
     Returns:
         list: List of numbers divisible by 3 or 5 from 1 to 50.
     """
-    return [*filter(lambda x: x%3 == 0 or x%5 == 0, range(1, 51))]
+    return [x for x in range(1, 51) if x%3 == 0 or x%5 == 0]
 
 # Example: generate_divisible_by_3_or_5() -> [3, 5, 6, 9, 10, 12, 15, 18, 20, 21, 24, 25, 27, 30, 33, 35, 36, 39, 40, 42, 45, 48, 50]
 
@@ -151,7 +150,7 @@ def generate_even_squares_odd_cubes():
     """
 
 
-    return [*map(lambda x: (x**2, x**3)[x%2 != 0], range(1, 11))]
+    return [(x**2, x**3)[x%2 != 0] for x in range(1, 11)]
 
 # Example: generate_even_squares_odd_cubes() -> [1, 4, 27, 16, 125, 36, 343, 64, 729, 100]
 
@@ -166,7 +165,7 @@ def generate_word_lengths(sentence):
     Returns:
         list: List of word lengths.
     """
-    return [*map(lambda x: len(x), sentence.split())]
+    return [len(x) for x in sentence.split()]
 
 # Example: generate_word_lengths("This is a sample sentence") -> [4, 2, 1, 6, 8]
 
