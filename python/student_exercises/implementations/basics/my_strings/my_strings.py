@@ -1,30 +1,48 @@
+import string
+
+
 def compteMots(phrase):
-    return None
+    return len(phrase.split())
 
 
 def inverser(mot):
-    return None
+    return mot[::-1]
 
 
 def estPalindrome(mot):
-    return None
+    return mot == inverser(mot)
 
 
 def compteCaracteres(mot):
-    return None
+    return len(mot)
 
 
 def compterLesLettres(mot):
-    return None
+    lettres = string.ascii_letters
+    count = 0
+    for lettre in mot:
+        if lettre in lettres:
+            count += 1
+    return count
 
 
 def compteVoyelles(mot):
-    return None
+    vowels = "aeiouyAEIOUY"
+    count = 0
+    for lettre in mot:
+        if lettre in vowels:
+            count += 1
+    return count
 
 
 def compteConsonnes(mot):
-    return None
+    vowels = "aeiouyAEIOUY"
+    count = 0
+    for lettre in mot:
+        if lettre not in vowels and lettre in string.ascii_letters:
+            count += 1
+    return count
 
 
 def concatenation(mot1, mot2):
-    return None
+    return mot1 + mot2
