@@ -10,7 +10,6 @@ def is_even(number: int) -> str:
     """
     return f'The number is {("odd", "even")[number % 2 == 0]}'
 
-        
 
 def factorial(n: int) -> int:
     """
@@ -24,20 +23,20 @@ def factorial(n: int) -> int:
     else:
         return n * factorial(n - 1)
 
+
 def fibonacci(n: int) -> int:
     """
     Function that computes the nth Fibonacci number.
     :param n: The index of the Fibonacci number to compute
     :return: The nth Fibonacci number
     """
-    if n == 0:
-        return 0
-    elif n == 1:
-        return 1
+    if n == 0 or n == 1:
+        return n
     else:
         return fibonacci(n - 2) + fibonacci(n - 1)
 
-def sum(n: int) -> int: # O(1); O(n); O(n^2); O(log n)
+
+def sum(n: int) -> int:  # O(1); O(n); O(n^2); O(log n)
     """
     Function that computes the sum of all integers from 0 to n.
     :param n: The number to compute the sum up to
@@ -49,10 +48,11 @@ def sum(n: int) -> int: # O(1); O(n); O(n^2); O(log n)
         return 1
 
     sum = 0
-    for i in range(0, n+1):
+    for i in range(0, n + 1):
         sum += i
 
     return sum
+
 
 def square(n: int) -> int:
     """
@@ -60,8 +60,7 @@ def square(n: int) -> int:
     :param n: The number to compute the square of
     :return: The square of n
     """
-    return n**2
-
+    return n ** 2
 
 
 def is_prime(n: int) -> bool:
