@@ -8,7 +8,7 @@ def is_even(number: int) -> str:
     Returns:
       A string that says if the number is even or odd
     """
-    return ('The number is odd', 'The number is even')[number % 2 == 0]
+    return f'The number is {("odd", "even")[number % 2 == 0]}'
 
         
 
