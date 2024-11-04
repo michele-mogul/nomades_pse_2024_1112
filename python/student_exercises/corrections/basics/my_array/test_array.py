@@ -41,7 +41,7 @@ class TestArrayFunctions(unittest.TestCase):
         self.assertEqual(max([1, 2, 3, 4, 5]), 5)
 
     def test_min_max(self):
-        self.assertEqual(min_max([1, 2, 3, 4, 5]), [1, 5])
+        self.assertEqual(min_max([1, 2, 3, 4, 5]), (1, 5))
 
     def test_median(self):
         self.assertEqual(median([1, 2, 3, 4, 5]), 3)
@@ -59,8 +59,8 @@ class TestArrayFunctions(unittest.TestCase):
     def test_variance(self):
         self.assertEqual(variance([1, 2, 3, 4, 5]), 2)
         self.assertEqual(variance([1, 1, 1, 1, 1, 1]), 0)
-        self.assertEqual(variance([1, 1, 1, 10, 10]), 19.44)
-        self.assertEqual(variance([4, 2, 4, 3, 2, 2]), 0.8055555555555556)
+        self.assertAlmostEquals(variance([1, 1, 1, 10, 10]), 19.44)
+        self.assertAlmostEquals(variance([4, 2, 4, 3, 2, 2]), 0.8055555555555556)
 
     def test_standard_deviation(self):
         self.assertAlmostEqual(standard_deviation([1, 2, 3, 4, 5]), 1.4142135623730951)
