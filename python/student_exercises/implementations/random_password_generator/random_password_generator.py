@@ -8,16 +8,17 @@ def generate_password(
     specials_char: bool, 
     length: int
 ) -> str:
-  # TODO: Generate a random password
-  # TODO: test if the password legth greater than 4
-  print(random.choices(string.ascii_uppercase, k=23))
-  print(uppercase)
-  print(lowercase)
-  print(digits)
-  print(specials_char)
-  print(length)
+  pool = ""
+  if uppercase:
+    pool = string.ascii_uppercase
+  if lowercase:
+    pool += string.ascii_lowercase
+  if digits:
+    pool += string.digits
+  if specials_char:
+    pool += string.punctuation
 
-  return "None"
+  return ''.join(random.choices(pool, k=int(length)))
 
 if __name__ == '__main__':
   print(generate_password(True, True, True, False, 4))
