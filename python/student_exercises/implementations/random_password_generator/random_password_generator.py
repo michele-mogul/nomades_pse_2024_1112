@@ -1,6 +1,9 @@
 import string
 import random
 
+MIN_LENGTH = 4
+
+
 def generate_password(
     uppercase: bool, 
     lowercase: bool, 
@@ -9,6 +12,9 @@ def generate_password(
     length: int
 ) -> str:
   pool = ""
+  if length < MIN_LENGTH:
+    raise ValueError("length must be greater than 4")
+  # assert length >= MIN_LENGTH, f"length must be greater than {MIN_LENGTH}"
   if uppercase:
     pool = string.ascii_uppercase
   if lowercase:
@@ -17,6 +23,9 @@ def generate_password(
     pool += string.digits
   if specials_char:
     pool += string.punctuation
+
+  if pool == "":
+    return string.ascii_letters
 
   return ''.join(random.choices(pool, k=int(length)))
 
