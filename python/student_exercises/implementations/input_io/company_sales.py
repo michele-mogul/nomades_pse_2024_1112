@@ -1,7 +1,9 @@
 import csv
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 # conda install matplotlib
 import os
+
+from python.student_exercises.implementations.basics.my_array.my_array import average, median
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -14,8 +16,10 @@ def read_sales_data() -> list[dict]:
     Returns:
     - sales_data (list): List of dictionaries representing sales data.
     """
-    sales_path = CURRENT_DIR +"/sales_data.csv"
     sales_data = []
+    sales_path = CURRENT_DIR +"/sales_data.csv"
+    with open(sales_path, 'r') as fp:
+        sales_data = list(csv.DictReader(fp))
     return sales_data
 
 
@@ -29,6 +33,9 @@ def read_employee_data() -> list[dict]:
     - employee_data (list): List of dictionaries representing employee data.
     """
     employee_data = []
+    employee_path = CURRENT_DIR +"/employee_data.csv"
+    with open(employee_path, 'r') as fp:
+        employee_data = list(csv.DictReader(fp))
     return employee_data
 
 
@@ -42,7 +49,7 @@ def calculate_total_sales(sales_data: list[dict]) -> float | int:
     Returns:
     - total_sales (float): Total sales amount.
     """
-    return None
+    return sum(float(item['Amount']) for item in sales_data)
 
 
 def calculate_average_sales(sales_data: list[dict]) -> float | int:
@@ -55,7 +62,7 @@ def calculate_average_sales(sales_data: list[dict]) -> float | int:
     Returns:
     - average_sales (float): Average sales amount.
     """
-    return None
+    return average(list(int(item['Amount']) for item in sales_data))
 
 def calculate_median_sales(sales_data: list[dict]) -> float | int:
     """
@@ -67,8 +74,8 @@ def calculate_median_sales(sales_data: list[dict]) -> float | int:
     Returns:
     - median_sales (float): Median sales amount.
     """
-    return None
-
+    
+    return median(list(int(item['Amount']) for item in sales_data))
 
 def calculate_total_salary_expenses(employee_data: list[dict]) -> float | int:
     """
@@ -80,7 +87,7 @@ def calculate_total_salary_expenses(employee_data: list[dict]) -> float | int:
     Returns:
     - total_salary_expenses (float): Total salary expenses.
     """
-    return None
+    return sum(float(item['Salary']) for item in employee_data)
 
 
 def calculate_average_salary(employee_data: list[dict]) -> float | int:
@@ -93,7 +100,7 @@ def calculate_average_salary(employee_data: list[dict]) -> float | int:
     Returns:
     - average_salary (float): Average salary.
     """
-    return None
+    return average(list(int(item['Salary']) for item in employee_data))
 
 def calculate_median_salary(employee_data: list[dict]) -> float | int:
     """
@@ -105,7 +112,7 @@ def calculate_median_salary(employee_data: list[dict]) -> float | int:
     Returns:
     - median_salary (float): Median salary.
     """
-    return None
+    return median(list(int(item['Salary']) for item in employee_data))
 
 
 def find_employee_with_highest_sales(sales_data: list[dict], employee_data: list[dict]) -> tuple[str, str]:
@@ -120,7 +127,21 @@ def find_employee_with_highest_sales(sales_data: list[dict], employee_data: list
     - employee_name (str): Name of the employee with the highest sales amount.
     - department_name (str): Name of the department of the employee with the highest sales amount.
     """
-    return None, None
+
+    grouped_sales = {
+        emp['EmployeeID']: {
+            'EmployeeID': emp['EmployeeID'],
+            'Department': emp['Department'],
+            'Name': emp['Name'],
+            'Salary': float(emp['Salary']),
+            'Sales': sum([float(sale['Amount']) for sale in sales_data if sale['EmployeeID'] == emp['EmployeeID']])
+        }
+        for emp in employee_data
+    }
+
+    max_sale = max(grouped_sales.values(), key=lambda x: x['Sales'])
+
+    return max_sale['Name'], max_sale['Department']
 
 
 def find_department_with_highest_sales(sales_data: list[dict], employee_data: list[dict]) -> str:
@@ -134,33 +155,76 @@ def find_department_with_highest_sales(sales_data: list[dict], employee_data: li
     Returns:
     - department_name (str): Name of the department with the highest sales.
     """
-    return None
+
+    max_sales_department = {}
+    for employee in employee_data:
+        for sale in sales_data:
+            if employee['EmployeeID'] == sale['EmployeeID']:
+                max_sales_department.update({employee['Department']: max_sales_department.get(employee['Department'], 0) + int(sale['Amount'])})
+
+    return max(max_sales_department, key=max_sales_department.get)
 
 
-# def plot_sales_by_department(sales_data, employee_data):
-#     """
-#     Plots a bar chart showing the total sales by department.
+def plot_sales_by_department(sales_data, employee_data):
+    """
+    Plots a bar chart showing the total sales by department.
 
-#     Arguments:
-#     - sales_data (list): List of dictionaries representing sales data.
-#     - employee_data (list): List of dictionaries representing employee data.
+    Arguments:
+    - sales_data (list): List of dictionaries representing sales data.
+    - employee_data (list): List of dictionaries representing employee data.
 
-#     Returns: None
-#     """
-#     pass
+    Returns: None
+    """
 
 
-# def plot_sales_vs_salary(sales_data, employee_data):
-#     """
-#     Plots a scatter plot showing the relationship between sales and salary.
+    sales_by_department = {}
+    for employee in employee_data:
+        for sale in sales_data:
+            if employee['EmployeeID'] == sale['EmployeeID']:
+                sales_by_department.update(
+                    {employee['Department']: sales_by_department.get(employee['Department'], 0) + int(sale['Amount'])})
 
-#     Arguments:
-#     - sales_data (list): List of dictionaries representing sales data.
-#     - employee_data (list): List of dictionaries representing employee data.
 
-#     Returns: None
-#     """
-#     pass
+    plt.bar(
+        list(sales_by_department.keys()),
+        list(sales_by_department.values()),
+    )
+    plt.grid(True)
+    plt.title("Total Sales by Department")
+    plt.show()
+    pass
+
+
+def plot_sales_vs_salary(sales_data, employee_data):
+    """
+    Plots a scatter plot showing the relationship between sales and salary.
+
+    Arguments:
+    - sales_data (list): List of dictionaries representing sales data.
+    - employee_data (list): List of dictionaries representing employee data.
+
+    Returns: None
+    """
+
+
+    # a list containing the salary by employee
+    grouped_sales = {
+        emp['EmployeeID']: {
+            'Department': emp['Department'],
+            'Salary': float(emp['Salary']),
+            'Sales': sum([float(sale['Amount']) for sale in sales_data if sale['EmployeeID'] == emp['EmployeeID']])
+        }
+        for emp in employee_data
+    }
+
+    sales_values_ = [item['Sales'] for item in grouped_sales.values()]
+    salary_values_ = [item['Salary'] for item in grouped_sales.values()]
+    plt.scatter(x = sales_values_, y = salary_values_)
+    plt.title('Relation between Sale Amount and Salary')
+    plt.xlabel('Sale Amount')
+    plt.ylabel('Salary')
+    plt.show()
+    pass
 
 
 def main():
@@ -206,7 +270,7 @@ def main():
     # plot_sales_by_department(sales_data, employee_data)
 
     # Plot sales vs. salary
-    # plot_sales_vs_salary(sales_data, employee_data)
+    plot_sales_vs_salary(sales_data, employee_data)
 
 
 if __name__ == '__main__':
