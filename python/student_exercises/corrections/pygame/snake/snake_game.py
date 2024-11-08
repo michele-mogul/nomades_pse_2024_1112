@@ -14,6 +14,7 @@ pygame.init()
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
 BLOCK_SIZE = 10
@@ -137,7 +138,7 @@ class Snake:
     """
     __current_direction: str = ""
     body: list[Point] = []
-    def __init__(self) -> None:
+    def __init__(self, color=GREEN) -> None:
         """
         Constructor of the Snake class used to create a snake object.
         -   The constructor should initialize the position of the snake with a random position.
@@ -158,6 +159,7 @@ class Snake:
         ]
 
         self.__current_direction: str = random.choice(["UP", "DOWN", "RIGHT"])
+        self.__color = color
 
     def move(self) -> None:
         """
@@ -215,7 +217,15 @@ class Snake:
         Args:
             direction (str): The new direction of the snake.
         """
-        pass
+        invalid_directions = {
+            "UP": "DOWN",
+            "DOWN": "UP",
+            "LEFT": "RIGHT",
+            "RIGHT": "LEFT"
+        }
+
+        if invalid_directions[self.__current_direction] != direction:
+            self.__current_direction = direction
 
     def grow(self) -> None:
         """
@@ -225,8 +235,7 @@ class Snake:
         
         - The function should add a new segment at the end of the snake.
         """
-        # TODO: Add a new segment at the end of the snake.
-        pass
+        self.body.append(self.body[-1].copy())
 
     def __check_border_collision(self) -> bool:
         """
@@ -238,7 +247,8 @@ class Snake:
         Returns:
             bool: True if the snake hits the border of the screen, False otherwise.
         """
-        return False
+        head: Point = self.body[0]
+        return head.x < 0 or head.x > WIDTH-BLOCK_SIZE or head.y < 0 or head.y > HEIGHT-BLOCK_SIZE
 
     def __check_self_collision(self) -> bool:
         """
@@ -249,7 +259,7 @@ class Snake:
         Returns:
             bool: True if the snake hits itself, False otherwise.
         """
-        return False
+        return self.body[0] in self.body[1:]
 
     def check_collision(self, item: Food) -> bool:
         """
@@ -263,7 +273,7 @@ class Snake:
         Returns:
             bool: True if the snake hits the food, False otherwise.
         """
-        return False
+        return self.body[0] == item.position
 
     def check_game_over(self) -> bool:
         """
@@ -273,15 +283,16 @@ class Snake:
         Returns:
             bool: True if the game is over, False otherwise.
         """
-        return False
+        return self.__check_border_collision() or self.__check_self_collision()
 
     def draw(self) -> None:
         for segment in self.body:
-            pygame.draw.rect(screen, GREEN, (segment.x, segment.y, BLOCK_SIZE, BLOCK_SIZE))
+            pygame.draw.rect(screen, self.__color, (segment.x, segment.y, BLOCK_SIZE, BLOCK_SIZE))
 
 # Create instances of Snake and Food - Global variables
 snake = Snake()
-food = Food(snake)
+snake2 = Snake(BLUE)
+foods = [Food(snake) for _ in range(10)]
 
 # Helpers functions
 def press_space_to_start(font):
@@ -336,22 +347,37 @@ def snake_game():
               elif event.key == pygame.K_RIGHT:
                   snake.change_direction("RIGHT")
               
+              if event.key == pygame.K_w:
+                  snake2.change_direction("UP")
+              elif event.key == pygame.K_s:
+                  snake2.change_direction("DOWN")
+              elif event.key == pygame.K_a:
+                  snake2.change_direction("LEFT")
+              elif event.key == pygame.K_d:
+                  snake2.change_direction("RIGHT")
+              
               update_direction = False
       # ================= END EVENT PART =================
 
       # ================= LOGIC PART =================
       # Move the snake
       snake.move()
+      snake2.move()
 
       #Check for food collision
-      if (snake.check_collision(food)):
-        snake.grow()
-        food.create_new_food_item(snake)
-        score += 1
+      for food in foods:
+        if (snake.check_collision(food)):
+          snake.grow()
+          food.create_new_food_item(snake)
+          score += 1
+        if (snake2.check_collision(food)):
+          snake2.grow()
+          food.create_new_food_item(snake2)
+          score += 1
 
 
       #Check for game over
-      if(snake.check_game_over()):
+      if(snake.check_game_over() or snake2.check_game_over()):
           running = False
       # ================= END LOGIC PART =================
       
@@ -360,7 +386,9 @@ def snake_game():
       screen.fill(BLACK)
       #Draw snake and food
       snake.draw()
-      food.draw()
+      snake2.draw()
+      for food in foods:
+        food.draw()
       
       display_score(font, score)
 
