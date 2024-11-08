@@ -1,5 +1,6 @@
-import pygame
 import random
+
+import pygame
 
 # To install pygame inside conda run:
 # run `pip install pygame` inside the coonda environment
@@ -16,6 +17,12 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
+OPPOSITE_DIRECTIONS = {
+    "UP": "DOWN",
+    "DOWN": "UP",
+    "LEFT": "RIGHT",
+    "RIGHT": "LEFT",
+}
 BLOCK_SIZE = 10
 
 # Set up the display
@@ -39,7 +46,10 @@ class Point(object):
         x = random.randint(0, (width-BLOCK_SIZE)//BLOCK_SIZE)*BLOCK_SIZE
         y = random.randint(0, (height-BLOCK_SIZE)//BLOCK_SIZE)*BLOCK_SIZE
         return Point(x, y)
-    
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
     def __eq__(self, other):
         """
         Magic Function to compare two Point objects.
@@ -58,8 +68,10 @@ class Food:
         Args:
             snake (Snake): The snake object.
         """
-        # TODO: Initialize the position of the food with a random position.
+
+        self.create_new_food_item(snake)
         pass
+
     def choose_position(self, snake) -> Point:
         """
         Function to choose a random position for the food. 
@@ -75,11 +87,18 @@ class Food:
         Returns:
             Point: The position of the food.
         """
-        p: Point = Point.get_random_point(WIDTH, HEIGHT)
-        # TODO: Check if the position is on the snake.
-        #       If the position is on the snake, choose another position.
-        return p
-    
+
+        all_positions = {
+            Point(x, y)
+            for x in range(0, WIDTH, BLOCK_SIZE)
+            for y in range(0, HEIGHT, BLOCK_SIZE)
+        }
+        # Create a set of positions occupied by the snake
+        snake_positions = set(snake.body)
+        # Get the available positions by subtracting snake positions
+        available_positions = list(all_positions - snake_positions)
+        # Choose a random position from the available ones
+        return random.choice(available_positions)
     
     def create_new_food_item(self, snake) -> None:
         """
@@ -91,7 +110,9 @@ class Food:
             snake (Snake): The snake object.
       
         """
+
         # TODO: Set the position of the food object to a random position that is not on the snake.
+        self.position = self.choose_position(snake)
         pass
 
     def draw(self) -> None:
@@ -139,14 +160,15 @@ class Snake:
         -   The constructor should initialize the direction of the snake with a random direction. (UP, DOWN, RIGHT)
                 only these directions because the snake can't go left at the beginning, as the left part of the head will be the body.
         """
-        # TODO: Initialize the position of the snake with a random position.
-        head: Point = None
+
+        head: Point = Point.get_random_point(WIDTH - 120, HEIGHT - 120)
         # TODO: Initialize the snake with 3 segments. the segments are stored in the self.body attribute.
         #       the first segment is the head of the snake. the next one is the head of the snake - BLOCK_SIZE (10) on the x axis. and the third one is the head of the snake - 2*BLOCK_SIZE (20) on the x axis.
         #       This will create a snake with 3 segments of 10px (BLOCK_SIZE) each.
-        self.body = None
-        # TODO: Initialize the direction of the snake with a random direction. (UP, DOWN, RIGHT)
-        self.__current_direction: str = None
+        self.body = [head, Point(head.x + BLOCK_SIZE, head.y + BLOCK_SIZE),
+                     Point(2 * (head.x + BLOCK_SIZE), 2 * (head.y + BLOCK_SIZE))]
+
+        self.__current_direction: str = random.choice(["UP", "DOWN", "LEFT"])
     
     def move(self) -> None:
         """
@@ -176,9 +198,21 @@ class Snake:
         """
         head_copy:Point = self.body[0].copy() # don't change this line, it's used to copy the head of the snake.
 
-        # TODO: Update the position of the head_copy of the snake according to the current direction.
-        # TODO: Add the new segment at the head of the snake.
-        # TODO: Remove the last segment of the snake.
+        # Update the position of the head_copy of the snake according to the current direction.
+        match self.__current_direction:
+            case "UP":
+                head_copy.y = self.body[0].y - BLOCK_SIZE
+            case "DOWN":
+                head_copy.y = self.body[0].y + BLOCK_SIZE
+            case "RIGHT":
+                head_copy.x = self.body[0].x + BLOCK_SIZE
+            case "LEFT":
+                head_copy.x = self.body[0].x - BLOCK_SIZE
+
+        # Add the new segment at the head of the snake.
+        self.body.insert(0, head_copy)
+        # Remove the last segment of the snake.
+        self.body.pop(-1)
         pass
     
     def change_direction(self, direction: str) -> None:
@@ -192,6 +226,9 @@ class Snake:
         Args:
             direction (str): The new direction of the snake.
         """
+
+        if direction != OPPOSITE_DIRECTIONS[self.__current_direction]:
+            self.__current_direction = direction
         pass
     
     def grow(self) -> None:
@@ -202,7 +239,7 @@ class Snake:
         
         - The function should add a new segment at the end of the snake.
         """
-        # TODO: Add a new segment at the end of the snake.
+        self.body.insert(-1, self.body[-1].copy())
         pass
 
     def check_border_collision(self) -> bool:
@@ -215,7 +252,9 @@ class Snake:
         Returns:
             bool: True if the snake hits the border of the screen, False otherwise.
         """
-        return False
+        width_ = (0 <= self.body[0].x <= WIDTH and 0 <= self.body[0].y <= HEIGHT)
+        return not width_
+
 
     def __check_self_collision(self) -> bool:
         """
@@ -226,11 +265,9 @@ class Snake:
         Returns:
             bool: True if the snake hits itself, False otherwise.
         """
-        return False
-    
-        
-    
-    def __check_collision(self, item: Food) -> bool:
+        return self.body[0] in self.body[1:len(self.body)]
+
+    def check_collision(self, item: Food) -> bool:
         """
         Function to check if the snake hits the food.
         To check if the snake hits the food you must check if the head of the snake is on the same position as the food.
@@ -242,7 +279,7 @@ class Snake:
         Returns:
             bool: True if the snake hits the food, False otherwise.
         """
-        return False
+        return self.body[0] == item.position
     
     def check_game_over(self) -> bool:
         """
@@ -252,7 +289,7 @@ class Snake:
         Returns:
             bool: True if the game is over, False otherwise.
         """
-        return False
+        return self.__check_self_collision() or self.check_border_collision()
     
     def draw(self) -> None:
         for segment in self.body:
@@ -340,6 +377,7 @@ def snake_game():
       #Draw snake and food
       snake.draw()
       food.draw()
+      print(snake.body[0].x, snake.body[0].y)
       
       display_score(font, score)
 
