@@ -25,11 +25,18 @@ def caesar_cipher(text: str, shift: int) -> str:
 
   Returns:
     str: The encoded text.
-  """ 
+  """
   CHARSET_LEN = 26 # we assume here we only use ascii lowercase letters
-  encoded = ""
-  return encoded
+  ASCII_a = ord('a')
+  ASCII_A = ord('A')
+
+  return ''.join(
+    chr((ord(c) - (ASCII_a if c.islower() else ASCII_A) + shift) % CHARSET_LEN + (
+      ASCII_a if c.islower() else ASCII_A)) if c.isalpha() else c
+    for c in text
+  )
 
 
-print(caesar_cipher("hello worldz", 3))
-print(caesar_cipher(caesar_cipher("hello world", 3), -3))
+if __name__ == "__main__":
+  print(caesar_cipher("hello worldz", 3))
+  print(caesar_cipher(caesar_cipher("hello world", 3), -3))
