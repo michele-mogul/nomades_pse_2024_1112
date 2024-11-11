@@ -14,6 +14,7 @@ pygame.init()
 # Colors
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
@@ -40,7 +41,7 @@ class Point(object):
 
     def copy(self):
         return Point(self.x, self.y)
-  
+
     @staticmethod
     def get_random_point(width, height):
         x = random.randint(0, (width-BLOCK_SIZE)//BLOCK_SIZE)*BLOCK_SIZE
@@ -61,7 +62,9 @@ class Point(object):
 # Food class
 class Food:
     position:Point = None
-    def __init__(self, snake) -> None:
+    all_positions: set[Point] = None
+
+    def __init__(self, snakes) -> None:
         """
         Constructor of the Food class used to create a food object.
 
@@ -69,10 +72,15 @@ class Food:
             snake (Snake): The snake object.
         """
 
-        self.create_new_food_item(snake)
+        self.all_positions = {
+            Point(x, y)
+            for x in range(0, WIDTH, BLOCK_SIZE)
+            for y in range(0, HEIGHT, BLOCK_SIZE)
+        }
+        self.create_new_food_item(snakes)
         pass
 
-    def choose_position(self, snake) -> Point:
+    def choose_position(self, snakes: list) -> Point:
         """
         Function to choose a random position for the food. 
         The position should not be on the snake.
@@ -86,33 +94,29 @@ class Food:
 
         Returns:
             Point: The position of the food.
+            :param snakes: list of all the snakes
         """
 
-        all_positions = {
-            Point(x, y)
-            for x in range(0, WIDTH, BLOCK_SIZE)
-            for y in range(0, HEIGHT, BLOCK_SIZE)
-        }
+
         # Create a set of positions occupied by the snake
-        snake_positions = set(snake.body)
-        # Get the available positions by subtracting snake positions
-        available_positions = list(all_positions - snake_positions)
-        # Choose a random position from the available ones
+
+        snake_positions = {segment for snake in snakes for segment in snake.body}
+        available_positions = list(self.all_positions - snake_positions)
         return random.choice(available_positions)
-    
-    def create_new_food_item(self, snake) -> None:
+
+    def create_new_food_item(self, snakes: list) -> None:
         """
         Function to create a new food object.
         this functions set the position (type Point) of the food object. (self.position)
         to a random position that is not on the snake.
-        
+
         Args:
             snake (Snake): The snake object.
-      
+
         """
 
         # TODO: Set the position of the food object to a random position that is not on the snake.
-        self.position = self.choose_position(snake)
+        self.position = self.choose_position(snakes)
         pass
 
     def draw(self) -> None:
@@ -169,7 +173,7 @@ class Snake:
                      Point(2 * (head.x + BLOCK_SIZE), 2 * (head.y + BLOCK_SIZE))]
 
         self.__current_direction: str = random.choice(["UP", "DOWN", "LEFT"])
-    
+
     def move(self) -> None:
         """
         Function to move the snake.
@@ -210,11 +214,11 @@ class Snake:
                 head_copy.x = self.body[0].x - BLOCK_SIZE
 
         # Add the new segment at the head of the snake.
-        self.body.insert(0, head_copy)
+        self.body = [head_copy] + self.body
         # Remove the last segment of the snake.
-        self.body.pop(-1)
+        self.body.pop()
         pass
-    
+
     def change_direction(self, direction: str) -> None:
         """
         Function to update the direction of the snake.
@@ -230,7 +234,7 @@ class Snake:
         if direction != OPPOSITE_DIRECTIONS[self.__current_direction]:
             self.__current_direction = direction
         pass
-    
+
     def grow(self) -> None:
         """
         Function to grow the snake. 
@@ -252,7 +256,7 @@ class Snake:
         Returns:
             bool: True if the snake hits the border of the screen, False otherwise.
         """
-        width_ = (0 <= self.body[0].x <= WIDTH and 0 <= self.body[0].y <= HEIGHT)
+        width_ = (0 <= self.body[0].x < WIDTH and 0 <= self.body[0].y <= HEIGHT)
         return not width_
 
 
@@ -280,8 +284,8 @@ class Snake:
             bool: True if the snake hits the food, False otherwise.
         """
         return self.body[0] == item.position
-    
-    def check_game_over(self) -> bool:
+
+    def check_game_over(self, other_snake) -> bool:
         """
         Function to check if the game is over.
         The game is over if the snake hits the border of the screen or if the snake hits itself.
@@ -289,21 +293,26 @@ class Snake:
         Returns:
             bool: True if the game is over, False otherwise.
         """
-        return self.__check_self_collision() or self.check_border_collision()
-    
-    def draw(self) -> None:
+        return self.__check_self_collision() or self.check_border_collision() or self.check_other_snake(other_snake)
+
+    def draw(self, color) -> None:
         for segment in self.body:
-            pygame.draw.rect(screen, GREEN, (segment.x, segment.y, BLOCK_SIZE, BLOCK_SIZE))
+            pygame.draw.rect(screen, color, (segment.x, segment.y, BLOCK_SIZE, BLOCK_SIZE))
+
+    def check_other_snake(self, other_snake):
+        return self.body[0] in other_snake.body
+
 
 # Create instances of Snake and Food - Global variables
-snake = Snake()
-food = Food(snake)
+player1 = Snake()
+player2 = Snake()
+foods = [Food([player1, player2]) for _ in range(20)]
 
 # Helpers functions
 def press_space_to_start(font):
   start_text = font.render("Press SPACE to start the game", True, WHITE, BLACK)
   start_text_rect = start_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-      
+
   screen.fill(BLACK)
   screen.blit(start_text, start_text_rect)
   pygame.display.flip()
@@ -334,8 +343,8 @@ def snake_game():
   running: bool = press_space_to_start(font) # -> blocking function
 
   while running:
-      clock.tick(20) # 20 FPS
-      
+      clock.tick(5)  # 20 FPS
+
       # ================= EVENT PART =================
       # getting the key events used to change the direction of the snake.
       # To change the direction we'll use the direction arrow keys of the keyboard.
@@ -344,41 +353,62 @@ def snake_game():
               running = False
           elif event.type == pygame.KEYDOWN and update_direction:
               if event.key == pygame.K_UP:
-                  snake.change_direction("UP")
+                  player1.change_direction("UP")
               elif event.key == pygame.K_DOWN:
-                  snake.change_direction("DOWN")
+                  player1.change_direction("DOWN")
               elif event.key == pygame.K_LEFT:
-                  snake.change_direction("LEFT")
+                  player1.change_direction("LEFT")
               elif event.key == pygame.K_RIGHT:
-                  snake.change_direction("RIGHT")
-              
+                  player1.change_direction("RIGHT")
+              elif event.key == pygame.K_w:
+                  player2.change_direction("UP")
+              elif event.key == pygame.K_s:
+                  player2.change_direction("DOWN")
+              elif event.key == pygame.K_a:
+                  player2.change_direction("LEFT")
+              elif event.key == pygame.K_d:
+                  player2.change_direction("RIGHT")
+
               update_direction = False
       # ================= END EVENT PART =================
 
       # ================= LOGIC PART =================
       # Move the snake
-      snake.move()
+      player1.move()
+      player2.move()
 
       #Check for food collision
-      if (snake.check_collision(food)):
-        snake.grow()
-        food.create_new_food_item(snake)
-        score += 1
+      for food in foods:
+          if player1.check_collision(food):
+              player1.grow()
+              food.create_new_food_item([player1, player2])
+              score += 1
 
+          # Check for food collision
+          if player2.check_collision(food):
+              player2.grow()
+              food.create_new_food_item([player1, player2])
+              score += 1
 
       #Check for game over
-      if(snake.check_game_over()):
+      if player1.check_game_over(other_snake=player2):
+          running = False
+      # Check for game over
+      if player2.check_game_over(other_snake=player1):
           running = False
       # ================= END LOGIC PART =================
-      
+
       # ================= DISPLAY PART =================
       #Clear canvas
       screen.fill(BLACK)
       #Draw snake and food
-      snake.draw()
-      food.draw()
-      print(snake.body[0].x, snake.body[0].y)
-      
+      player1.draw(GREEN)
+      player2.draw(BLUE)
+      for food in foods:
+          food.draw()
+      print(player1.body[0].x, player1.body[0].y)
+      print(player2.body[0].x, player2.body[0].y)
+
       display_score(font, score)
 
       # update screen to display the drawing
