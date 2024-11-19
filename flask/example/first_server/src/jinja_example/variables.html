@@ -1,0 +1,8 @@
+{% extends 'includes/_base.html' %}
+
+{% block title %}Variable{% endblock %}
+
+{% block content %}
+  <h1>Hello {{ vars.name }}</h1>
+  <p>You have {{vars['age']}} years old</p>
+{% endblock %}

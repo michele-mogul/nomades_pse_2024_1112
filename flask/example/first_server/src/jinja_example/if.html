@@ -1,0 +1,13 @@
+{% extends 'includes/_base.html' %}
+
+{% block title %}If{% endblock %}
+
+{% block content %}
+{% if age > 17 %}
+    <h1>Adult</h1>
+  {% elif age > 12 %}
+    <h1>Teen</h1>
+  {% else %}
+    <h1>infant</h1>
+  {% endif %}
+{% endblock %}
