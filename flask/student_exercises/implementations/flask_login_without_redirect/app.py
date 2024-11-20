@@ -6,6 +6,7 @@ from flask import Flask, render_template, request
 
 CURR_DIR = os.path.dirname(__file__)
 CSV_FILE = os.path.join(CURR_DIR, "users.csv")
+CSV_FIELDNAMES = ["uid", "pwd", "salt"]
 
 app = Flask(__name__, template_folder="src")
 
@@ -14,7 +15,7 @@ def ensure_csv_file_exists():
     """Ensures the CSV file exists with a header row."""
     if not os.path.exists(CSV_FILE):
         with open(CSV_FILE, "w", newline="") as csv_file:
-            writer = csv.DictWriter(csv_file, fieldnames=["uid", "pwd", "salt"])
+            writer = csv.DictWriter(csv_file, fieldnames=CSV_FIELDNAMES)
             writer.writeheader()
 
 
@@ -30,7 +31,7 @@ def write_user(uid, pwd, salt):
     """Writes a new user to the CSV file."""
     ensure_csv_file_exists()
     with open(CSV_FILE, "a", newline="") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=["uid", "pwd", "salt"])
+        writer = csv.DictWriter(csv_file, fieldnames=CSV_FIELDNAMES)
         writer.writerow({"uid": uid, "pwd": pwd, "salt": salt})
 
 @app.route("/")
