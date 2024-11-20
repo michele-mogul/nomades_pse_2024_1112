@@ -1,6 +1,7 @@
 import os
 import csv
 import hashlib
+from functools import wraps
 
 from flask import Flask, render_template, request, session, redirect, url_for, flash
 
@@ -11,6 +12,16 @@ CSV_FILE = os.path.join(CURR_DIR, "users.csv")
 
 app = Flask(__name__, template_folder="src")
 app.config["SECRET_KEY"] = 'some secret'
+
+def authenticated(func):
+  @wraps(func)
+  def inner_func(*args, **kwargs):
+    if not session.get('loggedin', False):
+      flash("Login first", "warning")
+      return redirect(url_for('login'))
+
+    return func(*args, **kwargs)
+  return inner_func
 
 @app.route("/")
 def index():
@@ -71,8 +82,9 @@ def login():
           if user["pwd"] == h_pwd:
             # TODO return "login successfull"
             session["loggedin"] = True
-            return "login successfull"
-      return "Invalid credentials"
+            flash("login sucessfull", "success")
+            return redirect(url_for("private"))
+      flash("Invalid credentials", "danger")
 
   return render_template("login/login.html")
 
@@ -85,12 +97,14 @@ def logout():
   return redirect(url_for('login'))
 
 @app.route("/private")
+@authenticated
 def private():
-  # if not ('loggedin' in session and session["loggedin"]):
-  if not session.get('loggedin', False):
-    return redirect(url_for('login'))
-  
-  return "I'm a private route"
+  return render_template("private/private.html")
+
+@app.route("/private2")
+@authenticated
+def private2():
+  return "I'm a private2 route"
 
 
 if __name__ == '__main__':
