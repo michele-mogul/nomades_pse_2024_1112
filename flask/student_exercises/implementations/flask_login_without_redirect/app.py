@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import os
 
 from flask import Flask, render_template, request
@@ -9,24 +10,32 @@ CSV_FILE = os.path.join(CURR_DIR, "users.csv")
 app = Flask(__name__, template_folder="src")
 
 
-def read_users():
-    """Reads users from the CSV file and returns a list of rows."""
+def ensure_csv_file_exists():
+    """Ensures the CSV file exists with a header row."""
     if not os.path.exists(CSV_FILE):
-        return []
+        with open(CSV_FILE, "w", newline="") as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=["uid", "pwd", "salt"])
+            writer.writeheader()
+
+
+def read_users():
+    """Reads users from the CSV file and returns a list of dictionaries."""
+    ensure_csv_file_exists()
     with open(CSV_FILE, "r") as csv_file:
-        return list(csv.reader(csv_file, delimiter=","))
+        reader = csv.DictReader(csv_file)
+        return list(reader)
 
 
-def write_user(uid, pwd):
+def write_user(uid, pwd, salt):
     """Writes a new user to the CSV file."""
+    ensure_csv_file_exists()
     with open(CSV_FILE, "a", newline="") as csv_file:
-        writer = csv.writer(csv_file, delimiter=",")
-        writer.writerow([uid, pwd])
+        writer = csv.DictWriter(csv_file, fieldnames=["uid", "pwd", "salt"])
+        writer.writerow({"uid": uid, "pwd": pwd, "salt": salt})
 
 @app.route("/")
 def index():
     return render_template("index.html")
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -35,12 +44,10 @@ def login():
     uid_ = request.form.get("tbx_uid")
     pwd_ = request.form.get("tbx_pwd")
     if uid_ and pwd_:
-        users = read_users()
-        if any(row and row[0] == uid_ and row[1] == pwd_ for row in users):
+        if any(user["uid"] == uid_ and user["pwd"] == hash_pwd(pwd_ + user['salt']) for user in read_users()):
             return "Login Success"
-        return "Error, User does not exist"
+        return "Invalid input", 400
     return "Invalid input", 400
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -49,12 +56,18 @@ def register():
     uid_ = request.form.get("tbx_uid")
     pwd_ = request.form.get("tbx_pwd")
     if uid_ and pwd_:
-        users = read_users()
-        if any(row and row[0] == uid_ for row in users):
-            return "Error, User already exists"
-        write_user(uid_, pwd_)
+        if any(user["uid"] == uid_ for user in read_users()):
+            return "Invalid input", 400
+
+        salt = os.urandom(32).hex()
+        write_user(uid_, hash_pwd(pwd_ + salt), salt)
         return "Registration successful"
     return "Invalid input", 400
+
+
+def hash_pwd(pwd_):
+    return hashlib.sha256(pwd_.encode(encoding='utf-8')).hexdigest()
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8080)
