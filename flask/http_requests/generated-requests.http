@@ -1,0 +1,23 @@
+###
+GET http://localhost:5000/
+
+<> 2024-11-18T122229.200.html
+<> 2024-11-18T122228.200.html
+<> 2024-11-18T120933.200.html
+
+###
+GET http://localhost:5000/users/{{id}}
+
+<> 2024-11-18T122229-1.200.html
+<> 2024-11-18T122225.200.html
+<> 2024-11-18T121058.200.html
+
+###
+GET http://localhost:5000/users/{{id}}/{{name}}
+
+<> 2024-11-18T122229-2.200.html
+<> 2024-11-18T122221.200.html
+<> 2024-11-18T121145.404.html
+
+###
+GET http://localhost:5000/template
