@@ -1,0 +1,16 @@
+{% extends 'includes/_base.html' %}
+
+{% block title %}Login{% endblock %}
+{% block content %}
+<form action="/register" method="POST">
+    <div class="mb-3">
+        <label class="form-label" for="tbx_uid">UID</label>
+        <input class="form-control" id="tbx_uid" name="tbx_uid" placeholder="Enter your new username" type="text"/>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="tbx_pwd">Password</label>
+        <input class="form-control" id="tbx_pwd" name="tbx_pwd" placeholder="Enter your new password" type="password"/>
+    </div>
+    <input class="btn btn-primary" type="submit" value="Register"/>
+</form>
+{% endblock %}
