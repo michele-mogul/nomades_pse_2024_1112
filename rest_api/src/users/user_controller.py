@@ -1,27 +1,13 @@
-import marshmallow as ma
 from flask import abort
 from flask.views import MethodView
 from flask_smorest import Blueprint
 
+from rest_api.src.users.dto.request import UserQueryArgsSchema, UserDataUpdateRequestSchema, UserDataCreateRequestSchema
+from rest_api.src.users.dto.response import UserDataResponseSchema, UserListDataResponseSchema
 from rest_api.src.users.user import User as UserModel
 from rest_api.src.users.user_repository import UserRepository
 
 user_blp = Blueprint("user", "user", url_prefix="/user", description="Operations on user")
-
-
-class UserSchema(ma.Schema):
-    id = ma.fields.String(dump_only=True)
-    firstname = ma.fields.String()
-    lastname = ma.fields.String()
-    username = ma.fields.String()
-    password = ma.fields.String()
-    email = ma.fields.String()
-    salt = ma.fields.String()
-
-
-class UserQueryArgsSchema(ma.Schema):
-    user_id = ma.fields.String()
-
 
 class ItemNotFoundError(Exception):
     pass
@@ -34,7 +20,7 @@ class UserById(MethodView):
         super().__init__()
 
     @user_blp.arguments(UserQueryArgsSchema, location="query")
-    @user_blp.response(200, UserSchema(many=True))
+    @user_blp.response(200, UserDataResponseSchema)
     def get(self, user_id):
         """
         :param user_id: The unique identifier of the user to retrieve.
@@ -46,8 +32,8 @@ class UserById(MethodView):
         except ItemNotFoundError:
             abort(404, message="Item not found.")
 
-    @user_blp.arguments(UserSchema)
-    @user_blp.response(200, UserSchema)
+    @user_blp.arguments(UserDataUpdateRequestSchema)
+    @user_blp.response(200, UserDataResponseSchema)
     def put(self, update_data, user_id):
         """
         :param update_data: Dictionary containing the data to update the user with.
@@ -62,8 +48,8 @@ class UserById(MethodView):
         except ItemNotFoundError:
             abort(404, message="Item not found.")
 
-    @user_blp.arguments(UserSchema)
-    @user_blp.response(200, UserSchema)
+    @user_blp.arguments(UserDataUpdateRequestSchema)
+    @user_blp.response(200, UserDataResponseSchema)
     def post(self, update_data, user_id):
         """
         :param update_data: Dictionary containing the data to update the user with.
@@ -95,8 +81,28 @@ class User(MethodView):
         self.repository = UserRepository()
         super().__init__()
 
-    @user_blp.arguments(UserSchema)
-    @user_blp.response(200, UserSchema)
+    @user_blp.arguments(UserDataCreateRequestSchema)
+    @user_blp.response(200, UserDataResponseSchema)
+    def post(self, update_data):
+        """
+        :param update_data: Dictionary containing the data to update the user with.
+        :param user_id: ID of the user to be updated.
+        :return: Updated user object if update is successful, otherwise raises an error if the user is not found.
+        """
+        try:
+            new_user = UserModel.from_dict(update_data)
+            return self.repository.create_user(new_user)
+        except ItemNotFoundError:
+            abort(404, message="Item not found.")
+
+
+@user_blp.route("/get_all_users")
+class GetAllUsers(MethodView):
+    def __init__(self):
+        self.repository = UserRepository()
+        super().__init__()
+
+    @user_blp.response(200, UserListDataResponseSchema)
     def post(self, update_data):
         """
         :param update_data: Dictionary containing the data to update the user with.

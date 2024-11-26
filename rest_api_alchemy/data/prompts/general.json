@@ -1,0 +1,54 @@
+{
+  "prompts": [
+    {
+      "id": "1",
+      "name": "Summarization",
+      "prompt": "Summarize the following text in three words only: {text}"
+    },
+    {
+      "id": "2",
+      "name": "Creative Writing",
+      "prompt": "Write a short story about a character who discovers a hidden portal in their backyard."
+    },
+    {
+      "id": "3",
+      "name": "Coding Help",
+      "prompt": "Write a Python function to calculate the nth Fibonacci number using recursion."
+    },
+    {
+      "id": "4",
+      "name": "Question Answering",
+      "prompt": "Answer the following question: {question}"
+    },
+    {
+      "id": "5",
+      "name": "Email Drafting",
+      "prompt": "Draft a professional email to inform a client about a delay in project delivery."
+    },
+    {
+      "id": "6",
+      "name": "Translation",
+      "prompt": "Translate the following sentence from English to French: {sentence}"
+    },
+    {
+      "id": "7",
+      "name": "List Generation",
+      "prompt": "Generate a list of 10 unique and creative business ideas."
+    },
+    {
+      "id": "8",
+      "name": "Brainstorming",
+      "prompt": "Provide 5 strategies to improve team collaboration in a remote working environment."
+    },
+    {
+      "id": "9",
+      "name": "Code Explanation",
+      "prompt": "Explain the following Python code snippet: {code}"
+    },
+    {
+      "id": "10",
+      "name": "Motivational Quote",
+      "prompt": "Generate a motivational quote for someone starting a new journey in life."
+    }
+  ]
+}

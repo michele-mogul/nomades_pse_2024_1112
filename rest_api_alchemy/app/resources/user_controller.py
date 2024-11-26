@@ -2,9 +2,9 @@ import marshmallow as ma
 from flask import abort
 from flask.views import MethodView
 from flask_smorest import Blueprint
+from rest_api_alchemy.app.models.user import User as UserModel
 
-from rest_api.src.users.user import User as UserModel
-from rest_api.src.users.user_repository import UserRepository
+from rest_api_alchemy.app.models.quest_repository import UserRepository
 
 user_blp = Blueprint("user", "user", url_prefix="/user", description="Operations on user")
 
@@ -64,7 +64,7 @@ class UserById(MethodView):
 
     @user_blp.arguments(UserSchema)
     @user_blp.response(200, UserSchema)
-    def post(self, update_data, user_id):
+    def post(self, update_data):
         """
         :param update_data: Dictionary containing the data to update the user with.
         :param user_id: ID of the user to be updated.

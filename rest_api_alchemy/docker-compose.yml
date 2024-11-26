@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    ports:
+      - "3307:3306"  # Map MariaDB's internal port 3306 to host port 3307
+    environment:
+      MYSQL_ROOT_PASSWORD: root  # Replace with a strong password
+      MYSQL_DATABASE: questdb       # Optional: Pre-create a database
+      MYSQL_USER: test               # Optional: Create a user
+      MYSQL_PASSWORD: test       # Optional: User's password
+    volumes:
+      - mariadb_data:/var/lib/mysql  # Persist database data
+
+  elasticsearch:
+    image: elasticsearch:7.17.13  # Use a compatible version of Elasticsearch
+    container_name: elasticsearch_container
+    environment:
+      discovery.type: single-node  # Enable single-node mode for testing/dev
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"  # Adjust Java heap size if needed
+    ports:
+      - "9200:9200"  # REST API
+      - "9300:9300"  # Transport API
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data  # Persist data
+
+  redis:
+    image: redis:latest
+    container_name: redis_container
+    ports:
+      - "6379:6379"  # Default Redis port
+    volumes:
+      - redis_data:/data  # Persist data
+
+volumes:
+  mariadb_data:
+  elasticsearch_data:
+  redis_data:
